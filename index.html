@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Be My Valentine?</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --rose-100:#ffe4e6; --rose-500:#f43f5e; --rose-600:#e11d48;
+      --card-bg: rgba(255,255,255,0.92);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:"Quicksand",system-ui,Arial;background:linear-gradient(135deg,var(--rose-100),#ffd1dc);-webkit-font-smoothing:antialiased;overflow:hidden}
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;position:relative}
+    .card{width:100%;max-width:820px;background:var(--card-bg);backdrop-filter:blur(6px);border-radius:20px;box-shadow:0 18px 50px rgba(0,0,0,0.12);padding:36px;position:relative;z-index:2;overflow:visible}
+    .title{font-family:'Dancing Script',cursive;font-size:2.6rem;color:var(--rose-600);margin:10px 0;text-align:center}
+    .start-img{width:240px;height:240px;object-fit:cover;border-radius:14px;display:block;margin:0 auto;box-shadow:0 12px 30px rgba(0,0,0,0.12)}
+    .stack{display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;height:140px;margin-top:14px}
+    .btn{padding:12px 26px;border-radius:999px;border:2px solid transparent;cursor:pointer;font-weight:700;transition:transform .12s ease,box-shadow .12s ease}
+    .btn-yes{background:var(--rose-500);color:white;box-shadow:0 8px 26px rgba(244,63,94,0.2)}
+    .btn-no{background:white;color:var(--rose-500);border:2px solid #fbcaca;box-shadow:0 4px 10px rgba(0,0,0,0.06);z-index:12;position:static}
+    .btn:hover{transform:scale(1.03)}
+    .no-wrap{display:flex;justify-content:center}
+    .yes-wrap{display:flex;justify-content:center;margin-top:6px}
+    .btn-no.moved{box-shadow:0 14px 36px rgba(244,63,94,0.18)}
+    .note{color:#6b7280;margin-top:10px;text-align:center}
+    .hidden{display:none}
+    .angry-img,.happy-img{width:300px;height:220px;object-fit:cover;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,0.14);display:block;margin:0 auto}
+    .angry-title{color:#b91c1c;font-size:1.8rem;text-align:center;margin:8px 0}
+    .success-title{color:var(--rose-600);font-size:2rem;text-align:center;margin:8px 0}
+    .reset-btn{background:transparent;color:var(--rose-500);border:none;text-decoration:underline;cursor:pointer;padding:6px 8px;border-radius:8px}
+    footer{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);color:rgba(148,17,44,0.6);font-size:.9rem;z-index:3}
+
+    /* hearts */
+    .hearts{pointer-events:none;position:fixed;inset:0;overflow:hidden;z-index:0}
+    .heart{position:absolute;bottom:-40px;font-size:20px;opacity:0;animation:float-up linear infinite;transform-origin:center}
+    @keyframes float-up{0%{transform:translateY(0) rotate(0deg);opacity:0}10%{opacity:0.45}80%{opacity:0.45}100%{transform:translateY(-115vh) rotate(360deg);opacity:0}}
+
+    /* responsive */
+    @media (max-width:640px){
+      .start-img,.angry-img,.happy-img{width:180px;height:180px}
+      .title{font-size:2rem}
+      .card{padding:20px}
+    }
+  </style>
+</head>
+<body>
+  <div class="hearts" id="hearts" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <div class="card" id="card">
+      <div id="initialState">
+        <img src="https://i.pinimg.com/originals/55/29/24/552924c5d913f43785c58e07371f8e53.jpg" alt="start" class="start-img" />
+        <h1 class="title">Will YOU be my Valentine?</h1>
+
+        <div class="stack" id="stack">
+          <!-- No initially in flow above Yes -->
+          <div class="no-wrap" id="noWrap">
+            <button id="noBtn" class="btn btn-no" aria-label="No button">No</button>
+          </div>
+
+          <div class="yes-wrap">
+            <button id="yesBtn" class="btn btn-yes" aria-label="Yes button">Yes! 💖</button>
+          </div>
+        </div>
+
+        <div class="note">Try to click "No" if you dare 😉</div>
+      </div>
+
+      <div id="angryState" class="hidden">
+        <h2 class="angry-title">Stop messing with me! 😠</h2>
+        <img src="https://media.tenor.com/dhuQV_msfiUAAAAM/cat-gun.gif" alt="angry" class="angry-img" />
+        <div class="note" id="triesText">You tried to press "No" several times...</div>
+        <div style="text-align:center;margin-top:12px">
+          <button id="resetFromAngry" class="reset-btn">Okay, I'll be serious now 🥺</button>
+        </div>
+      </div>
+
+      <div id="successState" class="hidden">
+        <!-- changed to requested GIF -->
+        <img src="https://i.pinimg.com/originals/88/14/9b/88149b0400750578f4d07d9bc3fb0fee.gif" alt="happy" class="happy-img" />
+        <h2 class="success-title">Yay!!! 🎉</h2>
+        <div class="note">I knew you'd say yes ❤️</div>
+        <div style="text-align:center;margin-top:12px">
+          <button id="resetFromSuccess" class="reset-btn">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Made with love 🌹</footer>
+
+  <script>
+    (function(){
+      const card = document.getElementById('card');
+      const noBtn = document.getElementById('noBtn');
+      const yesBtn = document.getElementById('yesBtn');
+      const initialState = document.getElementById('initialState');
+      const angryState = document.getElementById('angryState');
+      const successState = document.getElementById('successState');
+      const resetFromAngry = document.getElementById('resetFromAngry');
+      const resetFromSuccess = document.getElementById('resetFromSuccess');
+      const triesText = document.getElementById('triesText');
+
+      let noCount = 0;
+      let moved = false;
+
+      // helper to parse computed padding
+      function parsePx(value) {
+        return Math.round(parseFloat(value) || 0);
+      }
+
+      function setNoInitialPosition() {
+        // ensure No is visible and in the original wrapper
+        const origWrap = document.getElementById('noWrap');
+        if (origWrap && noBtn.parentElement !== origWrap) {
+          origWrap.appendChild(noBtn);
+        }
+        noBtn.style.display = '';
+        noBtn.style.position = 'static';
+        noBtn.style.left = '';
+        noBtn.style.top = '';
+        noBtn.style.zIndex = '12';
+        noBtn.classList.remove('moved');
+        moved = false;
+      }
+
+      function setNoAbsolute(x, y) {
+        // ensure button is direct child of card for absolute positioning relative to card
+        if (noBtn.parentElement !== card) {
+          card.appendChild(noBtn);
+        }
+        noBtn.style.display = '';
+        noBtn.style.position = 'absolute';
+        noBtn.style.left = Math.round(x) + 'px';
+        noBtn.style.top = Math.round(y) + 'px';
+        noBtn.style.zIndex = '999';
+        noBtn.classList.add('moved');
+        moved = true;
+      }
+
+      function hideNoButton() {
+        noBtn.style.display = 'none';
+      }
+
+      function clamp(val, min, max) {
+        return Math.max(min, Math.min(max, val));
+      }
+
+      function moveNoButton() {
+        if (!card) return;
+        const cardRect = card.getBoundingClientRect();
+        const comp = window.getComputedStyle(card);
+        const padLeft = parsePx(comp.paddingLeft);
+        const padTop = parsePx(comp.paddingTop);
+        const padRight = parsePx(comp.paddingRight);
+        const padBottom = parsePx(comp.paddingBottom);
+
+        const btnW = noBtn.offsetWidth;
+        const btnH = noBtn.offsetHeight;
+
+        // available area inside card (content box)
+        const availW = Math.max(0, card.clientWidth - btnW - 8); // small safety margin
+        const availH = Math.max(0, card.clientHeight - btnH - 8 - 80); // leave space at top for image/title
+
+        // if available area is tiny (mobile), position near center instead of random off-screen
+        let x, y;
+        if (availW <= 0) {
+          x = Math.max(8, (card.clientWidth - btnW) / 2);
+        } else {
+          x = Math.floor(Math.random() * availW) + 8;
+        }
+        if (availH <= 0) {
+          y = Math.max(8, (card.clientHeight - btnH) / 2);
+        } else {
+          y = Math.floor(Math.random() * availH) + 24;
+        }
+
+        // clamp for extra safety
+        x = clamp(x, 6, Math.max(6, card.clientWidth - btnW - 6));
+        y = clamp(y, 6, Math.max(6, card.clientHeight - btnH - 6 - 40));
+
+        setNoAbsolute(x, y);
+      }
+
+      function handleNoAttempt() {
+        noCount++;
+        if (noCount >= 4) {
+          // show angry state and hide No
+          initialState.classList.add('hidden');
+          angryState.classList.remove('hidden');
+          triesText.textContent = 'You tried to press "No" ' + noCount + ' times...';
+          hideNoButton();
+        } else {
+          moveNoButton();
+        }
+      }
+
+      // events
+      noBtn.addEventListener('mouseenter', function(e){
+        handleNoAttempt();
+      });
+
+      noBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        handleNoAttempt();
+      });
+
+      yesBtn.addEventListener('click', function(){
+        // hide No and show success
+        hideNoButton();
+        initialState.classList.add('hidden');
+        angryState.classList.add('hidden');
+        successState.classList.remove('hidden');
+      });
+
+      resetFromAngry.addEventListener('click', function(){
+        noCount = 0;
+        initialState.classList.remove('hidden');
+        angryState.classList.add('hidden');
+        successState.classList.add('hidden');
+        // restore initial layout after short delay
+        setTimeout(() => {
+          setNoInitialPosition();
+        }, 40);
+      });
+
+      resetFromSuccess.addEventListener('click', function(){
+        noCount = 0;
+        initialState.classList.remove('hidden');
+        angryState.classList.add('hidden');
+        successState.classList.add('hidden');
+        setTimeout(() => {
+          setNoInitialPosition();
+        }, 40);
+      });
+
+      // keep moved button within bounds on resize
+      window.addEventListener('resize', function(){
+        if (!moved) return;
+        // recompute clamp and adjust if necessary
+        const cardRect = card.getBoundingClientRect();
+        const btnW = noBtn.offsetWidth;
+        const btnH = noBtn.offsetHeight;
+        const left = parseInt(noBtn.style.left || '0', 10);
+        const top = parseInt(noBtn.style.top || '0', 10);
+        const maxX = Math.max(6, card.clientWidth - btnW - 6);
+        const maxY = Math.max(6, card.clientHeight - btnH - 6 - 40);
+        const nx = clamp(left, 6, maxX);
+        const ny = clamp(top, 6, maxY);
+        noBtn.style.left = nx + 'px';
+        noBtn.style.top = ny + 'px';
+      });
+
+      // hearts background
+      function makeHearts() {
+        const heartsContainer = document.getElementById('hearts');
+        if (!heartsContainer) return;
+        const count = 22;
+        for (let i = 0; i < count; i++) {
+          const s = document.createElement('div');
+          s.className = 'heart';
+          s.innerText = '❤️';
+          const left = Math.random() * 100;
+          const size = Math.random() * 26 + 10;
+          const delay = Math.random() * 8;
+          const duration = Math.random() * 14 + 10;
+          s.style.left = left + '%';
+          s.style.fontSize = size + 'px';
+          s.style.animationDelay = delay + 's';
+          s.style.animationDuration = duration + 's';
+          s.style.opacity = '0.4';
+          heartsContainer.appendChild(s);
+        }
+      }
+
+      // init
+      window.addEventListener('load', function(){
+        setNoInitialPosition();
+        makeHearts();
+      });
+    })();
+  </script>
+</body>
+</html>
