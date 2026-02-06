@@ -1,135 +1,70 @@
 :root{
-  --rose-50: #fff1f2;
   --rose-100: #ffe4e6;
   --rose-300: #fda4af;
   --rose-500: #f43f5e;
   --rose-600: #e11d48;
+  --bg: linear-gradient(135deg,#ffe4e6,#ffd1dc);
+  --card-bg: rgba(255,255,255,0.9);
+  --muted: #6b7280;
 }
 
-html,body{height:100%;margin:0;padding:0;font-family:"Quicksand",system-ui,Arial;background:linear-gradient(135deg,var(--rose-100),#ffd1dc);overflow:hidden}
-.app {
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:24px;
-}
-
-.card{
-  width:100%;
-  max-width:740px;
-  background: rgba(255,255,255,0.88);
-  backdrop-filter: blur(6px);
-  border-radius:24px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.12);
-  padding:36px;
-  text-align:center;
-  position:relative;
-  overflow:visible;
-  z-index:2;
-}
-
-.title{
-  font-size:2.6rem;
-  color:var(--rose-600);
-  font-weight:700;
-  margin:8px 0 24px;
-  font-family:'Dancing Script', cursive;
-  line-height:1;
-}
-
-.buttons {
-  display:flex;
-  gap:18px;
-  justify-content:center;
-  align-items:center;
-  position:relative;
-  height:84px;
-}
-
-.btn {
-  padding:14px 28px;
-  font-size:1.1rem;
-  border-radius:999px;
-  border:2px solid transparent;
-  cursor:pointer;
-  transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
-  user-select:none;
-  background:white;
-}
-
-.btn-yes {
-  background:var(--rose-500);
-  color:white;
-  font-weight:700;
-  box-shadow: 0 6px 20px rgba(244,63,94,0.28);
-}
-
-.btn-no {
-  background:white;
-  color:var(--rose-500);
-  border:2px solid #fbcaca;
-  font-weight:700;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-  position:absolute;
-  left:50%;
-  transform:translateX(-50%);
-  transition: left .22s cubic-bezier(.34,1.56,.64,1), top .22s cubic-bezier(.34,1.56,.64,1), transform .12s ease;
-}
-
-.btn:hover{transform:scale(1.03)}
-.btn-yes:active{transform:scale(.96)}
-
-.small-note{color:#7f7f7f;margin-top:12px;font-size:.95rem}
-
-.footer{
-  position:fixed;
-  bottom:10px;
-  left:50%;
-  transform:translateX(-50%);
-  color:rgba(148,17,44,0.6);
-  font-size:.9rem;
-  z-index:3;
-}
-
-.cat-img{
-  width:220px;height:220px;border-radius:18px;object-fit:cover;box-shadow:0 10px 30px rgba(0,0,0,0.18);margin:0 auto 18px;display:block;
-}
-
-.hidden{display:none}
-
-/* floating hearts background */
-.hearts {
-  pointer-events:none;
-  position:fixed;
-  inset:0;
+*{box-sizing:border-box}
+html,body,#root{height:100%;margin:0}
+body{
+  font-family:"Quicksand",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
   overflow:hidden;
-  z-index:0;
 }
-.heart {
-  position:absolute;
-  bottom:-40px;
-  font-size:20px;
-  opacity:0;
-  animation:float-up linear infinite;
-  transform-origin:center;
+
+/* layout */
+.app-root{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;position:relative}
+.card{
+  width:100%;max-width:820px;background:var(--card-bg);backdrop-filter:blur(6px);border-radius:20px;box-shadow:0 18px 50px rgba(0,0,0,0.12);padding:36px;position:relative;z-index:2;
 }
-@keyframes float-up {
-  0% { transform:translateY(0) rotate(0deg); opacity:0; }
-  10% { opacity:0.45; }
-  80% { opacity:0.45; }
-  100% { transform:translateY(-120vh) rotate(360deg); opacity:0; }
-}
+.title{font-family:'Dancing Script',cursive;font-size:2.8rem;color:var(--rose-600);margin:12px 0;text-align:center}
+.start-img{width:240px;height:240px;object-fit:cover;border-radius:16px;display:block;margin:0 auto 14px;box-shadow:0 12px 30px rgba(0,0,0,0.12)}
+.stack-area{display:flex;flex-direction:column;align-items:center;gap:16px;position:relative;height:140px;margin-top:10px}
+
+/* Buttons: No above Yes initially */
+.btn{padding:12px 26px;border-radius:999px;border:2px solid transparent;cursor:pointer;font-weight:700;transition:transform .12s ease, box-shadow .12s ease}
+.btn-yes{background:var(--rose-500);color:white;box-shadow:0 8px 26px rgba(244,63,94,0.2)}
+.btn-no{background:white;color:var(--rose-500);border:2px solid #fbcaca;box-shadow:0 4px 10px rgba(0,0,0,0.06)}
+.btn:hover{transform:scale(1.03)}
+.reset-btn{background:transparent;color:var(--rose-500);border:none;text-decoration:underline;cursor:pointer;padding:6px 8px}
+
+/* wrappers so No sits above Yes in the flow */
+.no-wrapper{display:flex;justify-content:center}
+.yes-wrapper{display:flex;justify-content:center;margin-top:6px}
+
+/* when moved, make No look slightly different */
+.btn-no.moved{box-shadow:0 14px 36px rgba(244,63,94,0.18);background:white}
 
 /* states */
-.state-area{position:relative;z-index:2}
-.angry-title{color:#b91c1c;font-size:1.9rem;font-weight:700;margin-bottom:8px}
-.success-title{font-size:2.6rem;color:var(--rose-600);font-weight:800;margin:6px 0}
-.reset-btn{background:transparent;color:var(--rose-500);border:none;text-decoration:underline;cursor:pointer;padding:6px 10px;border-radius:8px}
+.angry{display:flex;flex-direction:column;align-items:center;gap:12px}
+.angry-title{color:#b91c1c;font-size:1.8rem;margin:0}
+.angry-img{width:280px;height:220px;object-fit:cover;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,0.14)}
+.happy-img{width:280px;height:220px;object-fit:cover;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,0.14)}
+.success-title{color:var(--rose-600);font-size:2rem;margin:0}
+.note{color:var(--muted);margin-top:8px}
+
+/* hearts background */
+.hearts{pointer-events:none;position:fixed;inset:0;overflow:hidden;z-index:0}
+.heart{position:absolute;bottom:-40px;font-size:20px;opacity:0;animation:float-up linear infinite;transform-origin:center}
+@keyframes float-up{
+  0%{transform:translateY(0) rotate(0deg);opacity:0}
+  10%{opacity:0.45}
+  80%{opacity:0.45}
+  100%{transform:translateY(-115vh) rotate(360deg);opacity:0}
+}
+
+/* footer */
+.footer{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);color:rgba(148,17,44,0.6);font-size:.9rem;z-index:3}
 
 /* responsive */
-@media (max-width:520px){
-  .cat-img{width:160px;height:160px}
+@media (max-width:640px){
+  .start-img,.angry-img,.happy-img{width:180px;height:180px}
   .title{font-size:2rem}
   .card{padding:20px}
 }
